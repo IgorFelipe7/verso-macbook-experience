@@ -1,0 +1,1265 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ============================================================
+   MacBook Neo — design tokens
+   The post-sequence page is built from the hero's own values:
+   same ink, same muted grey, same hairline, same 22px radius,
+   same cubic-bezier. Nothing new is introduced.
+   ============================================================ */
+
+@keyframes fsh-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+:root {
+  --fsh-bg: #ffffff;
+  --fsh-ink: #1d1d1f;
+  --fsh-muted: #6e6e73;
+  --fsh-line: rgba(0, 0, 0, 0.08);
+  --fsh-nav-h: 64px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --page-x: clamp(20px, 5vw, 88px);
+  --maxw: 1240px;
+  --r-lg: 22px;
+  --r-md: 16px;
+  --surface: #fafafa;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 40px rgba(0, 0, 0, 0.09);
+}
+
+html {
+  background: var(--fsh-bg);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--fsh-bg);
+  color: var(--fsh-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+    "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fsh-ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  z-index: 300;
+  transform: translate(-50%, -160%);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--fsh-ink);
+  color: #fff;
+  font-size: 14px;
+  text-decoration: none;
+  transition: transform 240ms var(--ease);
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+.micro-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fsh-muted);
+}
+
+/* ============================================================
+   Hero — frame sequence
+   ============================================================ */
+
+.fsh-root {
+  position: relative;
+  width: 100%;
+}
+
+/* ---------------- Loader ---------------- */
+
+.fsh-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--fsh-bg);
+  transition: opacity 600ms ease, visibility 600ms ease;
+}
+
+.fsh-loader-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.fsh-loader-text {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--fsh-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fsh-loader-track {
+  position: relative;
+  width: 180px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.fsh-loader-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff9f3a, #ff6f9c, #5e9bff, #a37bff);
+  background-size: 200% auto;
+  animation: fsh-shimmer 3s linear infinite;
+  transition: width 200ms ease;
+}
+
+/* ---------------- Nav ---------------- */
+
+.fsh-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--fsh-nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(16px, 3vw, 40px);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 300ms ease, background 300ms ease;
+}
+
+.fsh-nav-scrolled {
+  border-bottom-color: var(--fsh-line);
+}
+
+.fsh-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fsh-ink);
+  text-decoration: none;
+}
+
+.fsh-brand-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #a9b6ff, #d9c2ff);
+  flex: none;
+}
+
+.fsh-nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.4vw, 34px);
+}
+
+.fsh-nav-link {
+  position: relative;
+  font-size: 15px;
+  color: var(--fsh-muted);
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+
+.fsh-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 320ms var(--ease);
+}
+
+.fsh-nav-link:hover,
+.fsh-nav-link.is-active {
+  color: var(--fsh-ink);
+}
+
+.fsh-nav-link:hover::after,
+.fsh-nav-link:focus-visible::after,
+.fsh-nav-link.is-active::after {
+  transform: scaleX(1);
+}
+
+.fsh-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #1d1d1f;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transform: translate(var(--mx, 0px), var(--my, 0px));
+  transition: transform 420ms var(--ease), opacity 200ms ease;
+}
+
+.fsh-cta:hover {
+  opacity: 0.88;
+}
+
+/* ---------------- Pinned stage ----------------
+   The stage sticks inside a tall track instead of being fixed, so when the
+   sequence ends it scrolls away on its own and hands the page to Act Two. */
+
+.fsh-scroll {
+  position: relative;
+  height: var(--fsh-scroll-h, 600vh);
+}
+
+.fsh-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fsh-stage a,
+.fsh-stage button {
+  pointer-events: auto;
+}
+
+.fsh-canvas-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fsh-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Settles back a touch as the hero releases into the page below. */
+  transform: scale(calc(1 - 0.05 * var(--rel, 0)));
+  transform-origin: center 46%;
+}
+
+/* ---------------- Title / copy ---------------- */
+
+.fsh-copy {
+  position: absolute;
+  top: calc(var(--fsh-nav-h) + clamp(24px, 6vh, 72px));
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 3vh, 30px);
+  text-align: center;
+  padding: 0 16px;
+  opacity: clamp(0, calc(1 - var(--rel, 0) * 1.6), 1);
+}
+
+.fsh-title {
+  margin: 0;
+  font-size: clamp(44px, 9.5vw, 148px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+
+.fsh-title-dark {
+  background: linear-gradient(180deg, #2b2b2e 0%, #6b6b70 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.fsh-title-rainbow {
+  background: linear-gradient(
+    90deg,
+    #ffa03a,
+    #ffd24a,
+    #b8e05a,
+    #6fd6c4,
+    #7fb8f5,
+    #ffa03a
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: fsh-shimmer 8s linear infinite;
+}
+
+.fsh-sub {
+  margin: 0;
+  font-size: clamp(15px, 1.5vw, 21px);
+  color: var(--fsh-muted);
+  opacity: clamp(0, calc(1 - var(--p, 0) * 110), 1);
+}
+
+/* ---------------- Step cards ---------------- */
+
+.fsh-cards {
+  position: absolute;
+  left: clamp(16px, 3vw, 48px);
+  bottom: clamp(52px, 8vh, 86px);
+  z-index: 4;
+  width: min(390px, calc(100vw - 32px));
+  height: 240px;
+  pointer-events: none;
+  opacity: calc(1 - var(--rel, 0));
+  transform: translateY(calc(var(--rel, 0) * -16px));
+}
+
+.fsh-card {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  transition: opacity 520ms var(--ease), transform 520ms var(--ease);
+  will-change: opacity, transform;
+}
+
+.fsh-card-prev {
+  opacity: 0;
+  transform: translateY(-24px) scale(0.98);
+}
+
+.fsh-card-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.fsh-card-inner {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px 28px;
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.fsh-card-glow {
+  position: absolute;
+  top: -60%;
+  right: -30%;
+  width: 78%;
+  height: 190%;
+  border-radius: 999px;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--c) 34%, transparent),
+    transparent 100%
+  );
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.fsh-card-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fsh-card-num {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--fsh-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fsh-card-num strong {
+  color: var(--fsh-ink);
+  font-weight: 700;
+}
+
+.fsh-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--c);
+  color: #fff;
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--c) 42%, transparent);
+}
+
+.fsh-card-title {
+  position: relative;
+  margin: 0;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fsh-ink);
+}
+
+.fsh-card-desc {
+  position: relative;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--fsh-muted);
+  flex: 1;
+}
+
+.fsh-card-foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fsh-ticks {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fsh-tick {
+  display: block;
+  width: 34px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.09);
+  overflow: hidden;
+}
+
+.fsh-tick span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--c);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.fsh-tick.is-done span {
+  transform: scaleX(1);
+}
+
+.fsh-tick.is-current span {
+  transform: scaleX(var(--sl, 0));
+}
+
+.fsh-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fsh-muted);
+  white-space: nowrap;
+}
+
+/* ---------------- Progress ---------------- */
+
+.fsh-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.06);
+  opacity: calc(1 - var(--rel, 0));
+}
+
+.fsh-progress-fill {
+  display: block;
+  height: 100%;
+  width: calc(var(--p, 0) * 100%);
+  background: linear-gradient(90deg, #ff9f3a, #ff6f9c, #5e9bff, #a37bff);
+  background-size: 200% auto;
+  animation: fsh-shimmer 6s linear infinite;
+}
+
+/* ============================================================
+   Shared: stills borrowed from the sequence
+   ============================================================ */
+
+.scene-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform: scale(calc(var(--zoom, 1) * var(--s, 1)));
+  will-change: transform;
+}
+
+.scene-img.is-cover {
+  object-fit: cover;
+}
+
+.scene-img.is-contain {
+  object-fit: contain;
+}
+
+/* ============================================================
+   Act Two — 01. Statement
+   ============================================================ */
+
+.es {
+  padding: clamp(110px, 20vh, 220px) var(--page-x) clamp(90px, 16vh, 190px);
+}
+
+.es-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+.es-title {
+  margin: 0;
+  font-size: clamp(38px, 8vw, 124px);
+  line-height: 1.03;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+
+.es-line {
+  display: block;
+  overflow: hidden;
+}
+
+.es-line-inner {
+  display: block;
+  opacity: var(--l, 0);
+  transform: translateY(calc((1 - var(--l, 0)) * 0.92em));
+  letter-spacing: calc(-0.045em + (1 - var(--l, 0)) * 0.012em);
+}
+
+.es-line:nth-child(1) .es-line-inner {
+  --l: var(--l0, 0);
+}
+.es-line:nth-child(2) .es-line-inner {
+  --l: var(--l1, 0);
+}
+.es-line:nth-child(3) .es-line-inner {
+  --l: var(--l2, 0);
+}
+
+.es-note {
+  margin: clamp(28px, 5vh, 54px) 0 0;
+  max-width: 34ch;
+  font-size: clamp(15px, 1.5vw, 19px);
+  line-height: 1.55;
+  color: var(--fsh-muted);
+  opacity: var(--note, 0);
+  transform: translateY(calc((1 - var(--note, 0)) * 14px));
+}
+
+/* ============================================================
+   Act Two — 02. Destaques
+   ============================================================ */
+
+.hl {
+  padding: clamp(60px, 10vh, 120px) var(--page-x) clamp(80px, 14vh, 160px);
+}
+
+.hl-head {
+  max-width: var(--maxw);
+  margin: 0 auto clamp(34px, 6vh, 68px);
+  opacity: var(--head, 0);
+  transform: translateY(calc((1 - var(--head, 0)) * 16px));
+}
+
+.hl-title {
+  margin: 10px 0 0;
+  max-width: 20ch;
+  font-size: clamp(26px, 3.6vw, 48px);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.032em;
+}
+
+.hl-grid {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(12px, 1.6vw, 22px);
+}
+
+.hl-panel {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--fsh-line);
+  background: var(--surface);
+  transition: transform 460ms var(--ease), box-shadow 460ms var(--ease);
+}
+
+.hl-panel:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+
+.hl-panel.is-wide {
+  grid-column: span 7;
+  flex-direction: row-reverse;
+  align-items: stretch;
+  min-height: clamp(280px, 36vh, 360px);
+}
+
+.hl-panel.is-tall {
+  grid-column: span 5;
+  grid-row: span 2;
+  flex-direction: column;
+}
+
+.hl-panel.is-regular:nth-of-type(3) {
+  grid-column: span 4;
+}
+
+.hl-panel.is-regular:nth-of-type(4) {
+  grid-column: span 3;
+}
+
+.hl-panel.is-regular {
+  flex-direction: column;
+  min-height: clamp(300px, 40vh, 400px);
+}
+
+.hl-media {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--c) 6%, var(--surface));
+}
+
+/* The source frames are 1400×2164. Taken out of flow they cannot inflate
+   their panel to the image's intrinsic height. */
+.hl-media .scene-img {
+  position: absolute;
+  inset: 0;
+}
+
+.hl-panel.is-wide .hl-media {
+  flex: 0 0 46%;
+}
+
+.hl-panel.is-tall .hl-media {
+  flex: 1 1 auto;
+  min-height: 280px;
+}
+
+.hl-panel.is-regular .hl-media {
+  flex: 1 1 auto;
+  min-height: 170px;
+}
+
+.hl-media .scene-img {
+  clip-path: inset(0 0 calc((1 - var(--r, 0)) * 100%) 0);
+}
+
+.hl-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(20px, 2.4vw, 32px);
+  opacity: var(--r, 0);
+  transform: translateY(calc((1 - var(--r, 0)) * 12px));
+}
+
+.hl-panel.is-wide .hl-body {
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.hl-headline {
+  margin: 4px 0 0;
+  font-size: clamp(21px, 2.1vw, 30px);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.hl-text {
+  margin: 0;
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.55;
+  color: var(--fsh-muted);
+  max-width: 40ch;
+}
+
+/* ============================================================
+   Act Two — 03. Scroll-driven moments
+   ============================================================ */
+
+.sf {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 72px);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--page-x);
+  align-items: start;
+}
+
+.sf.is-left .sf-sticky {
+  order: 2;
+}
+
+.sf-sticky {
+  position: sticky;
+  top: calc(var(--fsh-nav-h) + clamp(12px, 3vh, 30px));
+  height: calc(100dvh - var(--fsh-nav-h) - clamp(28px, 7vh, 70px));
+  display: flex;
+  align-items: center;
+}
+
+.sf-media {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--c) 5%, var(--surface));
+}
+
+/* The product occupies a wide, short band of the portrait source, so the
+   cropped treatments get a landscape panel to sit in. The silhouette
+   treatment keeps the full-height panel because it shows the whole frame. */
+.sf.is-grow .sf-media,
+.sf.is-detail .sf-media {
+  height: auto;
+  aspect-ratio: 3 / 2;
+  max-height: 100%;
+}
+
+.sf.is-grow {
+  --s: calc(0.84 + 0.2 * var(--p, 0));
+}
+
+.sf.is-detail {
+  --s: calc(1 + 0.14 * var(--p, 0));
+}
+
+.sf.is-silhouette {
+  --s: calc(0.92 + 0.1 * var(--p, 0));
+}
+
+.sf-copy {
+  display: flex;
+  align-items: center;
+  /* Sets the section's height, and therefore how long the still stays pinned. */
+  padding-block: 70vh 76vh;
+}
+
+.sf-copy-inner {
+  opacity: var(--reveal, 0);
+}
+
+.sf.is-left .sf-copy-inner {
+  transform: translateX(calc((1 - var(--reveal, 0)) * -22px));
+}
+
+.sf.is-right .sf-copy-inner {
+  transform: translateX(calc((1 - var(--reveal, 0)) * 22px));
+}
+
+.sf-label {
+  color: var(--c);
+}
+
+.sf-title {
+  margin: 14px 0 0;
+  font-size: clamp(30px, 4.4vw, 62px);
+  line-height: 1.06;
+  font-weight: 600;
+  letter-spacing: -0.038em;
+  max-width: 15ch;
+}
+
+.sf-text {
+  margin: clamp(16px, 2.4vh, 26px) 0 0;
+  max-width: 38ch;
+  font-size: clamp(15px, 1.35vw, 18px);
+  line-height: 1.6;
+  color: var(--fsh-muted);
+}
+
+/* ============================================================
+   Act Two — Final product moment
+   ============================================================ */
+
+.fc {
+  position: relative;
+  height: 190vh;
+  padding: 0 var(--page-x);
+}
+
+.fc-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2vh, 26px);
+  text-align: center;
+}
+
+.fc-media {
+  position: relative;
+  margin: 0;
+  width: min(680px, 100%);
+  flex: 0 1 auto;
+  height: clamp(200px, 38vh, 420px);
+  /* The still is scaled past its box; without this it covers the headline. */
+  overflow: hidden;
+  opacity: var(--settle, 0);
+  transform: translateY(calc((1 - var(--settle, 0)) * 5vh))
+    scale(calc(0.94 + 0.06 * var(--settle, 0)));
+}
+
+.fc-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.4vh, 16px);
+  width: 100%;
+  max-width: var(--maxw);
+}
+
+.fc-label {
+  opacity: var(--title, 0);
+}
+
+.fc-title {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(30px, 5vw, 68px);
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.042em;
+  opacity: var(--title, 0);
+  transform: translateY(calc((1 - var(--title, 0)) * 18px));
+}
+
+.fc-text {
+  margin: 0;
+  max-width: 42ch;
+  font-size: clamp(15px, 1.5vw, 19px);
+  line-height: 1.55;
+  color: var(--fsh-muted);
+  opacity: var(--body, 0);
+  transform: translateY(calc((1 - var(--body, 0)) * 14px));
+}
+
+.fc-cta {
+  margin-top: clamp(10px, 2vh, 20px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 34px;
+  border-radius: 999px;
+  background: var(--fsh-ink);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  opacity: var(--cta, 0);
+  transform: translateY(calc((1 - var(--cta, 0)) * 12px));
+  transition: opacity 200ms ease, box-shadow 320ms var(--ease);
+}
+
+.fc-cta:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.ft {
+  border-top: 1px solid var(--fsh-line);
+  padding: clamp(44px, 8vh, 88px) var(--page-x) clamp(30px, 5vh, 54px);
+}
+
+.ft-top,
+.ft-links,
+.ft-sign {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+.ft-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.ft-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fsh-ink);
+  text-decoration: none;
+}
+
+.ft-top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 15px;
+  color: var(--fsh-muted);
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+
+.ft-top-link:hover {
+  color: var(--fsh-ink);
+}
+
+.ft-arrow {
+  display: inline-block;
+  transition: transform 320ms var(--ease);
+}
+
+.ft-top-link:hover .ft-arrow {
+  transform: translateY(-3px);
+}
+
+.ft-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 2.4vw, 32px);
+  margin-top: clamp(26px, 5vh, 46px);
+  padding-bottom: clamp(26px, 5vh, 46px);
+  border-bottom: 1px solid var(--fsh-line);
+}
+
+.ft-links a {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 15px;
+  color: var(--fsh-muted);
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+
+.ft-links a:hover {
+  color: var(--fsh-ink);
+}
+
+.ft-sign {
+  margin-top: clamp(22px, 4vh, 38px);
+}
+
+/* ---------------- Verso signature ---------------- */
+
+.verso {
+  margin: 0;
+  font-size: clamp(15px, 1.6vw, 19px);
+  color: var(--fsh-muted);
+  letter-spacing: -0.01em;
+}
+
+.verso-name {
+  position: relative;
+  color: var(--fsh-ink);
+  font-weight: 600;
+}
+
+.verso-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.verso-link .verso-name::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 340ms var(--ease);
+}
+
+.verso-link:hover .verso-name::after,
+.verso-link:focus-visible .verso-name::after {
+  transform: scaleX(1);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 1020px) {
+  .hl-panel.is-wide {
+    grid-column: span 12;
+  }
+  .hl-panel.is-tall {
+    grid-column: span 6;
+    grid-row: auto;
+  }
+  .hl-panel.is-regular:nth-of-type(3),
+  .hl-panel.is-regular:nth-of-type(4) {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Block layout so the still stays sticky across the whole moment. */
+  .sf {
+    display: block;
+  }
+
+  .sf.is-left .sf-sticky {
+    order: initial;
+  }
+
+  .sf-sticky {
+    height: 40dvh;
+  }
+
+  /* The still stays pinned and the copy rises over it as a sheet. Without an
+     opaque background the pinned image would sit on top of the text. */
+  .sf-copy {
+    position: relative;
+    z-index: 1;
+    background: var(--fsh-bg);
+    padding-block: clamp(20px, 4vh, 40px) 44vh;
+  }
+
+  .sf-copy::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 56px;
+    background: linear-gradient(to top, var(--fsh-bg), transparent);
+    pointer-events: none;
+  }
+
+  .sf.is-left .sf-copy-inner,
+  .sf.is-right .sf-copy-inner {
+    transform: translateY(calc((1 - var(--reveal, 0)) * 16px));
+  }
+
+  .sf-title,
+  .sf-text {
+    max-width: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .fsh-nav-links {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Overrides `height`, not the custom property: the hero sets
+     --fsh-scroll-h inline and an inline custom property would win. */
+  .fsh-scroll {
+    height: 420vh;
+  }
+
+  .fsh-cards {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    height: 224px;
+    bottom: 40px;
+  }
+
+  .fsh-card-inner {
+    padding: 20px 22px;
+    border-radius: 18px;
+  }
+
+  .fsh-card-title {
+    font-size: 19px;
+  }
+
+  .fsh-card-desc {
+    font-size: 14px;
+  }
+
+  .fsh-tick {
+    width: 22px;
+  }
+
+  .hl-panel.is-wide {
+    flex-direction: column;
+  }
+
+  .hl-panel.is-wide .hl-media {
+    flex: 0 0 190px;
+  }
+
+  .hl-panel.is-tall,
+  .hl-panel.is-regular:nth-of-type(3),
+  .hl-panel.is-regular:nth-of-type(4) {
+    grid-column: span 12;
+  }
+
+  .fc {
+    height: 165vh;
+  }
+}
+
+/* Short viewports: the hero must not crush its own copy. */
+@media (max-height: 620px) {
+  .fsh-cards {
+    height: 200px;
+    bottom: 28px;
+  }
+
+  .fsh-copy {
+    top: calc(var(--fsh-nav-h) + 12px);
+  }
+
+  .sf-sticky {
+    height: calc(100dvh - var(--fsh-nav-h) - 24px);
+  }
+}
+
+/* ============================================================
+   Reduced motion — same narrative, without the travel
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .fsh-title-rainbow,
+  .fsh-progress-fill,
+  .fsh-loader-fill {
+    animation: none;
+  }
+
+  .fsh-card {
+    transition-duration: 1ms;
+  }
+
+  .fsh-canvas {
+    transform: none;
+  }
+
+  .fsh-cta {
+    transform: none;
+    transition: none;
+  }
+
+  /* Everything scroll-revealed is simply present. */
+  .es-line-inner,
+  .es-note,
+  .hl-head,
+  .hl-body,
+  .sf-copy-inner,
+  .fc-media,
+  .fc-label,
+  .fc-title,
+  .fc-text,
+  .fc-cta {
+    opacity: 1 !important;
+    transform: none !important;
+    letter-spacing: -0.045em;
+  }
+
+  .hl-media .scene-img {
+    clip-path: none !important;
+  }
+
+  .scene-img {
+    transform: scale(var(--zoom, 1));
+  }
+
+  .ft-arrow,
+  .fsh-nav-link::after,
+  .verso-link .verso-name::after {
+    transition: none;
+  }
+}
