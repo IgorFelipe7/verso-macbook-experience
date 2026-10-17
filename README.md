@@ -1,28 +1,22 @@
 # MacBook Neo — Product Experience
 
-A cinematic, scroll-driven product page built around a 941-frame image sequence. No video file, no animation library — just images, a scroll position, and a render loop tuned until it feels inevitable.
+An independent product-page concept built around a scroll-controlled image sequence. The project explores how to connect a visual narrative with responsive layouts, device-aware loading and reduced-motion support.
 
----
+## The experience
 
-## What this is
+As the visitor scrolls, the MacBook rotates, opens and moves through five colorways. A frame sequence drives the main stage, followed by editorial sections and product details that reuse crops from the same source images.
 
-Most "scroll hijack" product pages either fake the smoothness with CSS transitions that stutter under real scroll speed, or brute-force it with a heavy animation library that ships 80KB of runtime for something a `requestAnimationFrame` loop does in twelve lines. This is neither.
+The implementation uses React, TypeScript and Vite. Scroll behavior is coordinated through a shared ticker and a requestAnimationFrame loop.
 
-The page opens on a MacBook that rotates, opens, and cycles through five colorways as you scroll — driven frame-by-frame from a local image sequence, eased toward the scroll position rather than snapped to it. When the sequence ends, the pinned stage releases on its own scroll math and hands off into an editorial page built from the same design tokens: a statement section, an asymmetric highlights grid, three scroll-pinned product moments cropped from the same source frames, and a closing scene that mirrors the opening.
+## Engineering decisions
 
-Nothing here is a mockup. Every visual after the hero is a real crop of a real frame from the sequence — no stock photography, no placeholder assets.
+- **Shared scroll state.** Sections use one scroll listener and one rendering loop to coordinate their progress.
+- **Direct visual updates.** Scroll progress updates CSS custom properties instead of sending every animation frame through React state.
+- **Staged frame loading.** A concurrency-limited queue prioritizes frames around the current scroll position. Coarser sampling on constrained devices reduces the amount of decoded image data needed at once.
+- **Content-driven composition.** Frame numbers, product copy and crop coordinates live in a shared content module, so editorial changes can be made in one place.
+- **Reduced-motion presentation.** The alternative path keeps content visible in a static layout when the visitor prefers less movement.
 
-## Engineering notes
-
-**One scroll listener, one render loop, for the entire page.** Every scroll-linked section — the hero, the statement reveal, the highlights grid, the three product moments, the closing scene — subscribes to a single shared ticker instead of registering its own `scroll` handler. N sections cost one passive listener and one `requestAnimationFrame` callback, not N of each.
-
-**Scroll drives styles directly, never React state.** Progress is written straight to CSS custom properties on the DOM node. Scrolling this page produces zero component re-renders — verified under a synthetic 6000px scroll sweep at p99 latency under 18ms with zero long tasks.
-
-**The frame loader adapts to the device, not just the network.** A concurrency-capped queue fetches frames outward from the current scroll position — forward-biased, because that's where the reader is heading — instead of firing 941 requests at once. On coarse-pointer or memory-constrained devices it silently switches to a coarser stride and lets the nearest-loaded frame stand in, which is invisible at real scrubbing speed and roughly halves the decoded-bitmap footprint.
-
-**Frame composition is measured, not eyeballed.** The editorial crops (the highlights grid, the three scroll-pinned moments) are positioned from the actual pixel bounding box of the product within each source frame, computed once and hard-coded as content data — not guessed by hand at one breakpoint and hoped for at the rest.
-
-**Reduced motion is a first-class rendering path, not a hidden section.** Every scroll-revealed element ships a `prefers-reduced-motion` fallback that resolves to fully visible, static content — the complete narrative, just without the travel. Nothing is stripped out for accessibility; it's re-rendered for it.
+These choices address rendering and loading costs. Their performance still depends on the device, browser, assets and scroll conditions used for evaluation.
 
 ## Stack
 
@@ -81,13 +75,17 @@ npm run preview     # serve the production build locally
 
 The image sequence lives in `public/sequence/frame_0001.jpg` … `frame_0941.jpg` and is served as static assets — no CDN, no external host, no build-time processing.
 
-## Performance budget
+## Validation and performance review
 
-- Scroll-linked updates: **direct style writes**, not state — zero React commits while scrolling
-- Frame requests: **concurrency-capped**, prioritized around the scroll position
-- Long tasks during a full-page scroll sweep: **zero**
-- Every animated property is `transform` / `opacity`; nothing scroll-linked touches layout
-- `IntersectionObserver` for anything that only needs to know *if* it's visible; `requestAnimationFrame` reserved for anything that needs to know *how much*
+The package defines lint, type-check/build and preview commands. It does not currently define an automated test script.
+
+For a review, run the production build and check:
+
+1. Forward and backward scrolling, resizing and loading partway through the page.
+2. Frame loading on slower connections and devices with limited memory.
+3. Keyboard navigation and the reduced-motion presentation.
+
+Use React Profiler and browser performance tools to measure rendering, long tasks and memory on the target devices. When sharing a benchmark, include the commit, device, browser, viewport and exact interaction. Treat timing and memory results as measurements for that setup rather than universal guarantees.
 
 ## License
 
